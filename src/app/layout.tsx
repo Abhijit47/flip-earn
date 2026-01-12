@@ -1,5 +1,6 @@
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/providers/theme-provider';
+import { TRPCReactProvider } from '@/trpc/client';
 import type { Metadata } from 'next';
 import { Geist_Mono, Manrope } from 'next/font/google';
 import './globals.css';
@@ -28,14 +29,16 @@ export default function RootLayout({
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${manropeSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange>
-          {children}
-          <Toaster richColors closeButton position='top-center' />
-        </ThemeProvider>
+        <TRPCReactProvider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange>
+            {children}
+            <Toaster richColors closeButton position='top-center' />
+          </ThemeProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
