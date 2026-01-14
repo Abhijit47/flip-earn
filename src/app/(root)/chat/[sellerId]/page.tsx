@@ -1,12 +1,16 @@
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeftCircle } from 'lucide-react';
 import Link from 'next/link';
-import Filters from './_components/filters';
-import { FiltersDialog } from './_components/filters-dialog';
-import ListingCards from './_components/listing-cards';
 
-export default function MarketPlacePage() {
+type PageProps = {
+  params: Promise<{ sellerId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function ChatWithSellerPage({ params }: PageProps) {
+  const sellerId = (await params).sellerId;
+
   return (
     <main className={'container max-w-[85em] mx-auto px-4'}>
       <Card className='rounded-none border-none shadow-none bg-transparent'>
@@ -20,18 +24,13 @@ export default function MarketPlacePage() {
               })}>
               <ChevronLeftCircle className='h-5 w-5' />
             </Link>
-            <h2>Marketplaces</h2>
+            <h2>Chat with Seller {sellerId}</h2>
           </CardTitle>
 
-          <CardAction className={'lg:hidden block justify-end'}>
-            <FiltersDialog />
+          <CardAction>
+            <Button>Action</Button>
           </CardAction>
         </CardHeader>
-
-        <div className={'grid grid-cols-12 gap-6'}>
-          <Filters />
-          <ListingCards />
-        </div>
       </Card>
     </main>
   );
