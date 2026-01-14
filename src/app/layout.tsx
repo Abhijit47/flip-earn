@@ -28,7 +28,7 @@ export default function AppLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={`${manropeSans.variable} ${geistMono.variable} antialiased`}>
+        className={`${manropeSans.variable} ${geistMono.variable} antialiased relative`}>
         <TRPCReactProvider>
           <ThemeProvider
             attribute='class'
