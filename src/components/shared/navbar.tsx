@@ -28,6 +28,7 @@ import {
 import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { AnimatedThemeToggler } from '../extended/animated-theme-toggler';
 
 const data = {
   logo: {
@@ -190,6 +191,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className='flex gap-2'>
+            <AnimatedThemeToggler />
             <Button asChild variant='outline' size='sm'>
               <Link href={'/login'}>Login</Link>
             </Button>
