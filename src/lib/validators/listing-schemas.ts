@@ -76,8 +76,17 @@ export const listingSchema = z
   .extend(pricingDescriptionSchema.shape)
   .extend(screenshotsProofSchema.shape);
 
+export const updateListingSchema = z
+  .object({ id: z.uuid() })
+  .extend(listingSchema.shape);
+//listingSchema.partial();
+
+export const listingId = updateListingSchema.pick({ id: true });
+
 export type BasicInformationValues = z.infer<typeof basicInformationSchema>;
 export type AccountMetricsValues = z.infer<typeof accountMetricsSchema>;
 export type PricingDescriptionValues = z.infer<typeof pricingDescriptionSchema>;
 export type ScreenshotsProofValues = z.infer<typeof screenshotsProofSchema>;
 export type ListingValues = z.infer<typeof listingSchema>;
+
+export type UpdateListingValues = z.infer<typeof updateListingSchema>;
