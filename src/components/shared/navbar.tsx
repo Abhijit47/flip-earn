@@ -147,8 +147,13 @@ const navlinks: {
   },
 ];
 
+import { authClient } from '@/lib/auth-client';
+import { Spinner } from '../ui/spinner';
+import UserDropdown from './user-dropdown';
+
 export default function Navbar() {
   const pathname = usePathname();
+  const { isRefetching, isPending, data: user } = authClient.useSession();
 
   return (
     <header
@@ -194,12 +199,22 @@ export default function Navbar() {
           </div>
           <div className='flex gap-2'>
             <AnimatedThemeToggler />
-            <Button asChild variant='outline' size='sm'>
-              <Link href={'/login'}>Login</Link>
-            </Button>
-            <Button asChild size='sm'>
-              <Link href={'/sign-up'}>Sign Up</Link>
-            </Button>
+            {isPending || isRefetching ? (
+              <Button size={'icon-sm'}>
+                <Spinner />
+              </Button>
+            ) : user ? (
+              <UserDropdown user={user.user} />
+            ) : (
+              <>
+                <Button asChild variant='outline' size='sm'>
+                  <Link href={'/login'}>Login</Link>
+                </Button>
+                <Button asChild size='sm'>
+                  <Link href={'/sign-up'}>Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
