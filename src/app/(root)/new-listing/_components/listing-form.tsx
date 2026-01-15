@@ -10,20 +10,22 @@ import {
 } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { listingSchema, ListingValues } from '@/lib/validators/listing-schemas';
-import { DevTool } from '@hookform/devtools';
+// import { DevTool } from '@hookform/devtools';
+import { useCreateListing } from '@/features/listing/hooks/use-listings';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ChevronLeftCircle,
   ChevronRightCircle,
   ListChecksIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import {
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
   useWatch,
 } from 'react-hook-form';
+import { toast } from 'sonner';
 import Step1Form from './step-1-form';
 import Step2Form from './step-2-form';
 import Step3Form from './step-3-form';
@@ -32,37 +34,40 @@ import Step4Form from './step-4-form';
 export default function ListingForm() {
   const [step, setStep] = useState(1);
 
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<ListingValues>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
-      title: 'dfsdf',
+      title: 'Language Tutor Account',
       platform: 'discord',
-      username: 'sdasd',
+      username: '@username123',
       niche: 'tech',
 
-      followersCount: 1000,
-      engagementRate: 10,
-      monthlyViews: 50,
-      country: 'sdas',
+      followersCount: 10000,
+      engagementRate: 46, // TODO Make changes to float
+      monthlyViews: 50000,
+      country: 'india',
       audienceAgeRange: '18-24',
       isVerified: true,
-      isMonetized: true,
+      isMonetized: false,
 
-      price: 2000,
-      description: 'lorem ipsum dolor sit amet',
+      price: 20000,
+      description: `
+      This is a well-established Discord account focused on language tutoring.
+      It has a strong community of language enthusiasts and offers great engagement opportunities.
+      The account has been consistently active, providing valuable content and resources to its members.
+      With a solid follower base and high engagement rates, this account is perfect for anyone looking to enter the language tutoring niche.
+      `,
 
-      images: [],
+      images: [
+        'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      ],
     },
     mode: 'onChange',
   });
 
-  const onError: SubmitErrorHandler<ListingValues> = (errors) => {
-    console.log('Form Errors:', errors);
-  };
-
-  const onSubmit: SubmitHandler<ListingValues> = (data) => {
-    console.log('Form Data:', data);
-  };
+  const { mutateAsync } = useCreateListing();
 
   function prevStep() {
     if (step > 1) {
@@ -123,9 +128,30 @@ export default function ListingForm() {
     }
   }
 
+  const onError: SubmitErrorHandler<ListingValues> = (errors) => {
+    Object.values(errors).forEach((error) => {
+      toast.error(error.message, {
+        description: 'Please fix the errors before proceeding.',
+      });
+    });
+    return;
+  };
+
+  const onSubmit: SubmitHandler<ListingValues> = (data) => {
+    // console.log('Form Data:', data);
+    startTransition(async () => {
+      await mutateAsync(data);
+    });
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onError)}>
+      <form
+        className={'flex items-center gap-2'}
+        onSubmit={form.handleSubmit(onSubmit, onError)}>
+        <code className={'text-xs max-w-xs w-full overflow-x-auto'}>
+          <pre>{JSON.stringify(values, null, 2)}</pre>
+        </code>
         <div className={'max-w-5xl w-full mx-auto px-4 py-8 space-y-6'}>
           <Card>
             <CardHeader>
@@ -138,18 +164,22 @@ export default function ListingForm() {
             </CardHeader>
             <CardContent>{renderStep()}</CardContent>
             <CardFooter className={'flex items-center justify-between'}>
-              <Button onClick={prevStep} disabled={step === 1}>
+              <Button type='button' onClick={prevStep} disabled={step === 1}>
                 <ChevronLeftCircle className={'size-4'} />
                 Prev
               </Button>
               {step === 4 ? (
-                <Button onClick={nextStep} type='submit' disabled={step === 4}>
-                  <ListChecksIcon className={'size-4'} /> Create Listing
+                <Button
+                  onClick={nextStep}
+                  type='submit'
+                  disabled={!isCurrentStepValid() || isPending}>
+                  <ListChecksIcon className={'size-4'} />
+                  {isPending ? 'Submitting...' : 'Submit Listing'}
                 </Button>
               ) : (
                 <Button
                   onClick={nextStep}
-                  type='submit'
+                  type='button'
                   disabled={!isCurrentStepValid()}>
                   Next <ChevronRightCircle className={'size-4'} />
                 </Button>
@@ -158,7 +188,7 @@ export default function ListingForm() {
           </Card>
         </div>
       </form>
-      <DevTool control={form.control} />
+      {/* <DevTool control={form.control} /> */}
     </Form>
   );
 }
