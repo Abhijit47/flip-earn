@@ -15,7 +15,7 @@ export function prefetchPublicListings(params: ListingsInput) {
  * Prefetch one listing by ID
  * @param listingId
  */
-export function PrefetchOneListing(listingId: string) {
+export function prefetchPublicListing(listingId: string) {
   return prefetch(
     trpc.listings.getPublicListing.queryOptions({ id: listingId })
   );

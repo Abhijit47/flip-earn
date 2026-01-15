@@ -16,8 +16,17 @@ import z from 'zod';
 
 export const listingRouter = createTRPCRouter({
   // Get listings - public
-  getPublicListings: baseProcedure.query(async () => {
+  getPublicListings: baseProcedure.query(async ({ ctx }) => {
+    const auth = await ctx;
     const listings = await db.query.listing.findMany({
+      where(fields, ops) {
+        // only fetch those listings which are not belongs to me
+        if (auth?.user?.id) {
+          return ops.ne(fields.ownerId, auth.user.id);
+        } else {
+          return undefined;
+        }
+      },
       limit: 10,
     });
     return listings;
@@ -26,14 +35,37 @@ export const listingRouter = createTRPCRouter({
   // Get one listing by ID - public
   getPublicListing: baseProcedure
     .input(z.object({ id: z.uuid() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const auth = await ctx;
       const listingItem = await db.query.listing.findFirst({
-        where: (fields, { eq }) => eq(fields.id, input.id),
+        with: {
+          owner: {
+            columns: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              createdAt: true,
+            },
+          },
+        },
+        where: (fields, { and, eq, ne }) => {
+          // (fields.id, input.id) should be equal
+          // and ownerId should not be equal to auth.user.id (if auth.user.id exists)
+          if (auth?.user?.id) {
+            return and(
+              eq(fields.id, input.id),
+              ne(fields.ownerId, auth.user.id)
+            );
+          } else {
+            return undefined;
+          }
+        },
       });
       if (!listingItem) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Listing not found.',
+          message: 'Listing not found.<Public>',
         });
       }
       return listingItem;

@@ -158,7 +158,7 @@ export default function Navbar() {
         <nav className='hidden items-center justify-between lg:flex'>
           <div className='flex items-center gap-6'>
             {/* Logo */}
-            <Link href={'/'} className='flex items-center gap-2'>
+            <Link prefetch href={'/'} className='flex items-center gap-2'>
               {/* <img
                 src={data.logo.src}
                 className='max-h-8 dark:invert'
@@ -182,7 +182,9 @@ export default function Navbar() {
                           'data-active:bg-transparent border-b-2 border-transparent',
                           pathname === item.url && 'border-b-2 border-current'
                         )}>
-                        <Link href={item.url as Route}>{item.title}</Link>
+                        <Link prefetch href={item.url as Route}>
+                          {item.title}
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
@@ -205,7 +207,7 @@ export default function Navbar() {
         <div className='block lg:hidden'>
           <div className='flex items-center justify-between'>
             {/* Logo */}
-            <Link href={'/'} className='flex items-center gap-2'>
+            <Link prefetch href={'/'} className='flex items-center gap-2'>
               <img
                 src={data.logo.src}
                 className='max-h-8 dark:invert'
@@ -221,7 +223,10 @@ export default function Navbar() {
               <SheetContent className='overflow-y-auto'>
                 <SheetHeader>
                   <SheetTitle>
-                    <Link href={'/'} className='flex items-center gap-2'>
+                    <Link
+                      prefetch
+                      href={'/'}
+                      className='flex items-center gap-2'>
                       <img
                         src={data.logo.src}
                         className='max-h-8 dark:invert'
@@ -245,7 +250,9 @@ export default function Navbar() {
                               pathname === item.url &&
                                 'border-b-2 border-current'
                             )}>
-                            <Link href={item.url as Route}>{item.title}</Link>
+                            <Link prefetch href={item.url as Route}>
+                              {item.title}
+                            </Link>
                           </NavigationMenuLink>
                         </NavigationMenuItem>
                       ))}
