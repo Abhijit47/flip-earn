@@ -1,3 +1,7 @@
+import {
+  Country,
+  CountryDropdown,
+} from '@/components/extended/country-dropdown';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Field,
@@ -19,9 +23,11 @@ import {
   AccountMetricsValues,
   ageRanges,
 } from '@/lib/validators/listing-schemas';
+import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 export default function Step2Form() {
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const form = useFormContext<AccountMetricsValues>();
 
   return (
@@ -132,11 +138,13 @@ export default function Step2Form() {
                 <FieldLabel htmlFor='country'>
                   Primary Audience Country
                 </FieldLabel>
-                <Input
-                  id='country'
-                  type='text'
-                  placeholder='India'
-                  {...field}
+                <CountryDropdown
+                  placeholder='Country'
+                  defaultValue={field.value}
+                  onChange={(country) => {
+                    field.onChange(country.alpha3);
+                    setSelectedCountry(country);
+                  }}
                   aria-invalid={fieldState.invalid}
                 />
 

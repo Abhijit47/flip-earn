@@ -76,9 +76,13 @@ export default function ListingForm() {
   }
 
   function nextStep() {
-    if (step < 4) {
-      setStep(step + 1);
-    }
+    // if (step < 4) {
+    //   setStep(step + 1);
+    // }
+    // Defer the step change to the next tick to avoid immediate submit
+    setTimeout(() => {
+      setStep((prev) => (prev < 4 ? prev + 1 : prev));
+    }, 0);
   }
 
   function renderStep() {
@@ -170,7 +174,6 @@ export default function ListingForm() {
               </Button>
               {step === 4 ? (
                 <Button
-                  onClick={nextStep}
                   type='submit'
                   disabled={!isCurrentStepValid() || isPending}>
                   <ListChecksIcon className={'size-4'} />
