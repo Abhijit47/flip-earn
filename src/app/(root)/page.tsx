@@ -1,4 +1,3 @@
-import { ClientGreeting } from '@/components/client-greeting';
 import { AvatarCircles } from '@/components/extended/avatar-circles';
 import { Highlighter } from '@/components/extended/highlighter';
 import {
@@ -19,9 +18,8 @@ import { HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-export default async function Home() {
-  // const greeting = await caller.hello({ text: 'from tRPC server' });
-  // prefetch(trpc.hello.queryOptions({ text: 'from tRPC server' }));
+export default function Home() {
+  prefetchPublicListings();
 
   return (
     <HydrateClient>
@@ -95,6 +93,12 @@ export default async function Home() {
                 <p>Discover the hottest social profiles available right now.</p>
               </CardDescription>
             </CardHeader>
+
+            <CardContent>
+              <Suspense fallback={<div>Loading Listings...</div>}>
+                <MarketPlaceListingCards placement='homepage' />
+              </Suspense>
+            </CardContent>
           </Card>
 
           <Card>
@@ -139,9 +143,6 @@ export default async function Home() {
               </RainbowButton>
             </CardFooter>
           </Card>
-          <Suspense fallback={<div>Loading...</div>}>
-            <ClientGreeting />
-          </Suspense>
         </main>
       </ErrorBoundary>
     </HydrateClient>
@@ -152,6 +153,8 @@ import { ChevronRight } from 'lucide-react';
 
 import { AnimatedGradientText } from '@/components/extended/animated-gradient-text';
 import { RainbowButton } from '@/components/extended/rainbow-button';
+import MarketPlaceListingCards from '@/features/listing/components/listings';
+import { prefetchPublicListings } from '@/features/listing/server/prefetch';
 import { cn } from '@/lib/utils';
 import { IconRocket } from '@tabler/icons-react';
 import Link from 'next/link';
